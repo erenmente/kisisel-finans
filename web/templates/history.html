@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}İşlem Geçmişi | Finans Asistanı{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="page-header-content">
+        <h1 class="page-title">📜 İşlem Geçmişi</h1>
+        <p class="page-subtitle">Tüm alış ve satış işlemlerin</p>
+    </div>
+</section>
+
+<!-- Stats -->
+<section class="summary-cards">
+    <div class="summary-card">
+        <div class="summary-icon">📈</div>
+        <div class="summary-content">
+            <span class="summary-label">Toplam İşlem</span>
+            <span class="summary-value" id="totalTransactions">-</span>
+        </div>
+    </div>
+    <div class="summary-card summary-success">
+        <div class="summary-icon">💚</div>
+        <div class="summary-content">
+            <span class="summary-label">Alış İşlemleri</span>
+            <span class="summary-value" id="buyCount">-</span>
+        </div>
+    </div>
+    <div class="summary-card summary-danger">
+        <div class="summary-icon">💔</div>
+        <div class="summary-content">
+            <span class="summary-label">Satış İşlemleri</span>
+            <span class="summary-value" id="sellCount">-</span>
+        </div>
+    </div>
+</section>
+
+<!-- Filter -->
+<section class="filter-section">
+    <div class="filter-group">
+        <label>Sembol Filtrele:</label>
+        <input type="text" id="filterSymbol" placeholder="Örn: THYAO" class="filter-input">
+    </div>
+    <div class="filter-group">
+        <label>İşlem Tipi:</label>
+        <select id="filterType" class="filter-select" title="İşlem Tipi">
+            <option value="">Tümü</option>
+            <option value="ALIS">Alış</option>
+            <option value="SATIS">Satış</option>
+            <option value="GUNCELLEME">Güncelleme</option>
+        </select>
+    </div>
+</section>
+
+<!-- History List -->
+<section class="section">
+    <div class="history-list history-list-full" id="historyList">
+        <div class="history-item skeleton">
+            <div class="skeleton-text"></div>
+        </div>
+        <div class="history-item skeleton">
+            <div class="skeleton-text"></div>
+        </div>
+        <div class="history-item skeleton">
+            <div class="skeleton-text"></div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/history.js"></script>
+{% endblock %}

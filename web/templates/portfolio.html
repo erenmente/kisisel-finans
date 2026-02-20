@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Portföy | Finans Asistanı{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="page-header-content">
+        <h1 class="page-title">💼 Portföyüm</h1>
+        <p class="page-subtitle">Tüm yatırımlarını yönet</p>
+    </div>
+    <div class="page-actions">
+        <button class="btn btn-primary" id="addInvestmentBtn">
+            <span>➕</span> Yatırım Ekle
+        </button>
+    </div>
+</section>
+
+<!-- Summary Cards -->
+<section class="summary-cards">
+    <div class="summary-card">
+        <div class="summary-icon">💰</div>
+        <div class="summary-content">
+            <span class="summary-label">Toplam Maliyet</span>
+            <span class="summary-value" id="totalCost">-</span>
+        </div>
+    </div>
+    <div class="summary-card">
+        <div class="summary-icon">📊</div>
+        <div class="summary-content">
+            <span class="summary-label">Sembol Sayısı</span>
+            <span class="summary-value" id="symbolCount">-</span>
+        </div>
+    </div>
+</section>
+
+<!-- Portfolio Table -->
+<section class="section">
+    <div class="portfolio-table-wrapper">
+        <table class="portfolio-table">
+            <thead>
+                <tr>
+                    <th>Sembol</th>
+                    <th>Adet</th>
+                    <th>Ort. Maliyet</th>
+                    <th>Toplam Maliyet</th>
+                    <th>İlk Alış</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody id="portfolioBody">
+                <tr>
+                    <td colspan="6" class="loading-row">Yükleniyor...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Add Investment Modal -->
+<div class="modal" id="addModal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>➕ Yeni Yatırım Ekle</h3>
+            <button class="modal-close" id="closeModal">&times;</button>
+        </div>
+        <form id="addForm">
+            <div class="form-group">
+                <label>Sembol</label>
+                <input type="text" id="formSymbol" placeholder="THYAO, TTE, USD..." required>
+            </div>
+            <div class="form-group">
+                <label>Adet</label>
+                <input type="number" id="formAmount" step="0.0001" placeholder="100" required>
+            </div>
+            <div class="form-group">
+                <label>Birim Maliyet (TL)</label>
+                <input type="number" id="formCost" step="0.0001" placeholder="60.50" required>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelModal">İptal</button>
+                <button type="submit" class="btn btn-primary">Ekle</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Sell Modal -->
+<div class="modal" id="sellModal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>💰 Satış Yap</h3>
+            <button class="modal-close" id="closeSellModal">&times;</button>
+        </div>
+        <form id="sellForm">
+            <input type="hidden" id="sellSymbol">
+            <div class="form-group">
+                <label>Sembol</label>
+                <input type="text" id="sellSymbolDisplay" disabled title="Satılacak Sembol">
+            </div>
+            <div class="form-group">
+                <label>Satılacak Adet</label>
+                <input type="number" id="sellAmount" step="0.0001" placeholder="50" required>
+            </div>
+            <div class="form-group">
+                <label>Satış Fiyatı (TL)</label>
+                <input type="number" id="sellPrice" step="0.0001" placeholder="70.00" required>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelSellModal">İptal</button>
+                <button type="submit" class="btn btn-danger">Sat</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/portfolio.js"></script>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Piyasa | Finans Asistanı{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="page-header-content">
+        <h1 class="page-title">📈 Piyasa</h1>
+        <p class="page-subtitle">Anlık fiyatlar ve piyasa verileri</p>
+    </div>
+    <div class="page-actions">
+        <button class="btn btn-glow" id="refreshBtn">
+            <span>🔄</span> Yenile
+        </button>
+    </div>
+</section>
+
+<!-- Search -->
+<section class="search-section">
+    <div class="search-box">
+        <input type="text" class="search-input" id="searchInput"
+            placeholder="Sembol ara... (THYAO, USD, TTE, ALTIN, BITCOIN)" autocomplete="off">
+        <button class="search-btn" id="searchBtn">🔍</button>
+    </div>
+    <div class="search-result" id="searchResult"></div>
+</section>
+
+<!-- Currency Section -->
+<section class="section">
+    <div class="section-header">
+        <h2 class="section-title">💱 Döviz Kurları</h2>
+        <span class="section-badge">Canlı</span>
+    </div>
+    <div class="market-grid" id="currencyGrid">
+        <div class="market-card skeleton">
+            <div class="skeleton-text"></div>
+        </div>
+        <div class="market-card skeleton">
+            <div class="skeleton-text"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Commodities Section -->
+<section class="section">
+    <div class="section-header">
+        <h2 class="section-title">🥇 Emtialar</h2>
+    </div>
+    <div class="market-grid" id="commodityGrid">
+        <div class="market-card skeleton">
+            <div class="skeleton-text"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Stocks Section -->
+<section class="section">
+    <div class="section-header">
+        <h2 class="section-title">📊 BIST Hisseleri</h2>
+    </div>
+    <div class="market-grid" id="stockGrid">
+        <div class="market-card skeleton">
+            <div class="skeleton-text"></div>
+        </div>
+        <div class="market-card skeleton">
+            <div class="skeleton-text"></div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/market.js"></script>
+{% endblock %}

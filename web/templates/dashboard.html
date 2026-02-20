@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Finans Asistanı{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">
+            <span class="hero-greeting">Hoş Geldin,</span>
+            <span class="hero-name">Eren</span> 👋
+        </h1>
+        <p class="hero-subtitle">Portföyün ve piyasalar bir bakışta</p>
+    </div>
+    <div class="hero-stats">
+        <div class="stat-card stat-primary">
+            <div class="stat-icon">💰</div>
+            <div class="stat-info">
+                <span class="stat-label">Toplam Değer</span>
+                <span class="stat-value" id="totalValue">-</span>
+            </div>
+        </div>
+        <div class="stat-card stat-success">
+            <div class="stat-icon">📈</div>
+            <div class="stat-info">
+                <span class="stat-label">Aktif Pozisyon</span>
+                <span class="stat-value" id="positionCount">-</span>
+            </div>
+        </div>
+        <div class="stat-card stat-info">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-info">
+                <span class="stat-label">İşlem Sayısı</span>
+                <span class="stat-value" id="transactionCount">-</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Portfolio Performance -->
+<section class="section">
+    <div class="section-header">
+        <h2 class="section-title">📊 Portföy Performansı</h2>
+        <button class="btn btn-glow btn-sm" id="refreshPerformance">
+            <span>🔄</span> Güncelle
+        </button>
+    </div>
+    <div class="performance-grid">
+        <div class="chart-card">
+            <h3 class="chart-title">Portföy Dağılımı</h3>
+            <div class="chart-container">
+                <canvas id="portfolioChart"></canvas>
+            </div>
+            <div class="chart-empty hidden" id="chartEmpty">
+                <div class="empty-state-icon">📊</div>
+                <div class="empty-state-text">Henüz yatırım yok</div>
+            </div>
+        </div>
+        <div class="chart-card">
+            <h3 class="chart-title">Kar / Zarar Durumu</h3>
+            <div class="performance-summary" id="performanceSummary">
+                <div class="perf-loading">
+                    <div class="loading-spinner"></div>
+                    <span>Fiyatlar yükleniyor...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Search -->
+<section class="search-section">
+    <div class="search-box">
+        <input type="text" class="search-input" id="searchInput" placeholder="Sembol ara... (THYAO, USD, TTE, ALTIN)"
+            autocomplete="off">
+        <button class="search-btn" id="searchBtn">
+            <span>🔍</span>
+        </button>
+    </div>
+    <div class="search-result" id="searchResult"></div>
+</section>
+
+<!-- Quick Overview -->
+<section class="section">
+    <div class="section-header">
+        <h2 class="section-title">⚡ Hızlı Bakış</h2>
+        <a href="/market" class="btn btn-secondary">Tümünü Gör →</a>
+    </div>
+    <div class="market-grid" id="quickMarket">
+        <div class="market-card skeleton">
+            <div class="skeleton-text"></div>
+        </div>
+        <div class="market-card skeleton">
+            <div class="skeleton-text"></div>
+        </div>
+        <div class="market-card skeleton">
+            <div class="skeleton-text"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Price Alerts -->
+<section class="section">
+    <div class="section-header">
+        <h2 class="section-title">🔔 Fiyat Alarmları</h2>
+        <button class="btn btn-primary btn-sm" id="addAlertBtn">
+            <span>➕</span> Alarm Ekle
+        </button>
+    </div>
+    <div class="alerts-list" id="alertsList">
+        <div class="empty-state">
+            <div class="empty-state-icon">🔔</div>
+            <div class="empty-state-text">Henüz alarm yok</div>
+            <div class="empty-state-hint">"Alarm Ekle" butonuyla fiyat alarmı oluştur</div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Transactions -->
+<section class="section">
+    <div class="section-header">
+        <h2 class="section-title">📜 Son İşlemler</h2>
+        <a href="/history" class="btn btn-secondary">Tümünü Gör →</a>
+    </div>
+    <div class="history-list" id="recentHistory">
+        <div class="history-item skeleton">
+            <div class="skeleton-text"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Alert Modal -->
+<div class="modal" id="alertModal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>🔔 Yeni Fiyat Alarmı</h3>
+            <button class="modal-close" id="closeAlertModal">&times;</button>
+        </div>
+        <form id="alertForm">
+            <div class="form-group">
+                <label>Sembol</label>
+                <input type="text" id="alertSymbol" placeholder="USD, THYAO, ALTIN..." required>
+            </div>
+            <div class="form-group">
+                <label>Koşul</label>
+                <select id="alertCondition" class="filter-select alert-select" title="Alarm Koşulu">
+                    <option value="above">Fiyat üstüne çıkarsa ↑</option>
+                    <option value="below">Fiyat altına düşerse ↓</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Hedef Fiyat (TL)</label>
+                <input type="number" id="alertPrice" step="0.0001" placeholder="40.00" required>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelAlertModal">İptal</button>
+                <button type="submit" class="btn btn-primary">Alarm Oluştur</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/dashboard.js"></script>
+{% endblock %}

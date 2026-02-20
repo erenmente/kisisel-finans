@@ -1,0 +1,23 @@
+# Hassas veriler
+.env
+*.db
+alarmlar.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Sistem
+.DS_Store
+Thumbs.db
+
+# Gemini
+.gemini/

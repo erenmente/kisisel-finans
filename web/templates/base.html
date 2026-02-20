@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Finans Asistanı{% endblock %}</title>
+    <meta name="description" content="Yapay zeka destekli kişisel finans asistanı">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- Background -->
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <span class="logo-icon">📊</span>
+                    <span class="logo-text">Finans<span class="logo-accent">Asistan</span></span>
+                </a>
+                <nav class="nav">
+                    <a href="/" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">Dashboard</a>
+                    <a href="/portfolio"
+                        class="nav-link {% if active_page == 'portfolio' %}active{% endif %}">Portföy</a>
+                    <a href="/market" class="nav-link {% if active_page == 'market' %}active{% endif %}">Piyasa</a>
+                    <a href="/history" class="nav-link {% if active_page == 'history' %}active{% endif %}">Geçmiş</a>
+                </nav>
+                <div class="header-actions">
+                    <button class="theme-toggle" id="themeToggle" title="Tema Değiştir">
+                        <span class="theme-icon" id="themeIcon">🌙</span>
+                    </button>
+                    <span class="time-display" id="currentTime"></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">✅</span>
+        <span class="toast-message" id="toastMessage">İşlem başarılı!</span>
+    </div>
+
+    <!-- AI Chatbot Widget -->
+    <div class="chatbot-fab" id="chatbotFab" title="AI Asistan">
+        <span>🤖</span>
+    </div>
+
+    <div class="chatbot-panel" id="chatbotPanel">
+        <div class="chatbot-header">
+            <div class="chatbot-header-info">
+                <span class="chatbot-avatar">🤖</span>
+                <div>
+                    <h4>Finans AI Asistan</h4>
+                    <span class="chatbot-status">Çevrimiçi</span>
+                </div>
+            </div>
+            <div class="chatbot-header-actions">
+                <button class="chatbot-btn-icon" id="chatClear" title="Sohbeti Temizle">🗑️</button>
+                <button class="chatbot-btn-icon" id="chatClose" title="Kapat">✕</button>
+            </div>
+        </div>
+        <div class="chatbot-messages" id="chatMessages">
+            <div class="chat-message bot">
+                <div class="chat-bubble">
+                    Merhaba Eren! 👋 Ben senin AI finans asistanınım.
+                    Portföyün hakkında soru sorabilir, yatırım fikirlerini tartışabilir
+                    veya piyasa hakkında konuşabiliriz. Ne sormak istersin?
+                </div>
+            </div>
+        </div>
+        <div class="chatbot-input-area">
+            <input type="text" class="chatbot-input" id="chatInput" placeholder="Mesajını yaz..." autocomplete="off">
+            <button class="chatbot-send" id="chatSend">
+                <span>➤</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© <span id="footerYear"></span> Finans Asistanı • Yapay Zeka Destekli</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/static/js/common.js"></script>
+    <script src="/static/js/chatbot.js"></script>
+    <script src="/static/js/theme.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>
