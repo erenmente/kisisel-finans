@@ -39,15 +39,37 @@ except Exception:
 # Flask
 app = Flask(__name__, 
     template_folder='../web/templates',
-    static_folder='../web/static'
+    static_folder='../web/static',
+    static_url_path='/static'
 )
 CORS(app)
+
+# --- ALT DİZİN (SUBDIRECTORY) DESTEĞİ ---
+# Bu bölge, uygulamanın erenmente.com/finans altında çalışmasını sağlar.
+class PrefixMiddleware(object):
+    def __init__(self, app, prefix=''):
+        self.app = app
+        self.prefix = prefix
+    def __call__(self, environ, start_response):
+        if environ['PATH_INFO'].startswith(self.prefix):
+            environ['PATH_INFO'] = environ['PATH_INFO'][len(self.prefix):]
+            environ['SCRIPT_NAME'] = self.prefix
+            return self.app(environ, start_response)
+        else:
+            # Canlıda Vercel/Render rewrite kullanıyorsak bazen prefix gelmez, 
+            # ancak linklerin doğru üretilmesi için SCRIPT_NAME set edilmelidir.
+            if os.getenv('FORCE_SCRIPT_NAME'):
+                environ['SCRIPT_NAME'] = os.getenv('FORCE_SCRIPT_NAME')
+            return self.app(environ, start_response)
+
+app.wsgi_app = PrefixMiddleware(app.wsgi_app, prefix='/finans')
+# ---------------------------------------
 
 # Logger & DB
 logger = setup_logger("WebAPI", logging.INFO)
 
-# Veritabanı yolu - proje kök dizininde
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))  # finans/finans/
+# Veritabanı yolu - proje kök dizininde (daha güvenli path yönetimi)
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DB_PATH = os.path.join(BASE_DIR, "portfoy.db")
 db = PortfolioDB(DB_PATH)
 

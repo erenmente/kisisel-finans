@@ -7,9 +7,20 @@
 // ============================================================
 
 const API = {
+    // URL'yi prefix (SCRIPT_ROOT) ile birleştirme
+    prepareUrl(endpoint) {
+        // Eğer endpoint başında / varsa ve SCRIPT_ROOT varsa birleştir
+        const prefix = typeof SCRIPT_ROOT !== 'undefined' ? SCRIPT_ROOT : '';
+        // Endpoint zaten tam yolsa dokunma, değilse başına prefix ekle
+        if (endpoint.startsWith('http')) return endpoint;
+        const cleanEndpoint = endpoint.startsWith('/') ? endpoint : '/' + endpoint;
+        return prefix + cleanEndpoint;
+    },
+
     async get(endpoint) {
         try {
-            const res = await fetch(endpoint);
+            const url = this.prepareUrl(endpoint);
+            const res = await fetch(url);
             return await res.json();
         } catch (error) {
             console.error('API Error:', error);
@@ -19,7 +30,8 @@ const API = {
 
     async post(endpoint, data) {
         try {
-            const res = await fetch(endpoint, {
+            const url = this.prepareUrl(endpoint);
+            const res = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -33,7 +45,8 @@ const API = {
 
     async delete(endpoint) {
         try {
-            const res = await fetch(endpoint, { method: 'DELETE' });
+            const url = this.prepareUrl(endpoint);
+            const res = await fetch(url, { method: 'DELETE' });
             return await res.json();
         } catch (error) {
             console.error('API Error:', error);
