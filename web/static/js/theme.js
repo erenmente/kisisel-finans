@@ -1,10 +1,19 @@
 /**
  * Theme Toggle - Light/Dark Mode
+ * Auto-detects system preference on first visit
  */
 
 const Theme = {
     init() {
-        const saved = localStorage.getItem('finans-theme') || 'dark';
+        // First check localStorage, then system preference
+        let saved = localStorage.getItem('finans-theme');
+
+        if (!saved) {
+            // Auto-detect system preference
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            saved = prefersDark ? 'dark' : 'light';
+        }
+
         this.apply(saved);
 
         const toggle = document.getElementById('themeToggle');
@@ -16,6 +25,13 @@ const Theme = {
                 localStorage.setItem('finans-theme', next);
             });
         }
+
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('finans-theme')) {
+                this.apply(e.matches ? 'dark' : 'light');
+            }
+        });
     },
 
     apply(theme) {

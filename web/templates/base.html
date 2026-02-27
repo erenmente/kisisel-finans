@@ -22,7 +22,7 @@
 
     <script type="text/javascript">
         // JS tarafında API yollarını otomatik ayarlamak için
-        const SCRIPT_ROOT = {{ request.script_root|tojson }};
+        const SCRIPT_ROOT = {{ request.script_root| tojson }};
     </script>
 </head>
 
@@ -40,21 +40,30 @@
                     <span class="logo-text">Finans<span class="logo-accent">Asistan</span></span>
                 </a>
                 <nav class="nav">
-                    <a href="{{ url_for('page_dashboard') }}" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">Dashboard</a>
+                    <a href="{{ url_for('page_dashboard') }}"
+                        class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">Dashboard</a>
                     <a href="{{ url_for('page_portfolio') }}"
                         class="nav-link {% if active_page == 'portfolio' %}active{% endif %}">Portföy</a>
-                    <a href="{{ url_for('page_market') }}" class="nav-link {% if active_page == 'market' %}active{% endif %}">Piyasa</a>
-                    <a href="{{ url_for('page_history') }}" class="nav-link {% if active_page == 'history' %}active{% endif %}">Geçmiş</a>
+                    <a href="{{ url_for('page_market') }}"
+                        class="nav-link {% if active_page == 'market' %}active{% endif %}">Piyasa</a>
+                    <a href="{{ url_for('page_history') }}"
+                        class="nav-link {% if active_page == 'history' %}active{% endif %}">Geçmiş</a>
                 </nav>
                 <div class="header-actions">
                     <button class="theme-toggle" id="themeToggle" title="Tema Değiştir">
                         <span class="theme-icon" id="themeIcon">🌙</span>
                     </button>
                     <span class="time-display" id="currentTime"></span>
+                    <button class="hamburger" id="hamburgerBtn" title="Menü">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
                 </div>
             </div>
         </div>
     </header>
+    <div class="nav-overlay" id="navOverlay"></div>
 
     <!-- Main Content -->
     <main class="main">
