@@ -68,10 +68,13 @@ app.wsgi_app = PrefixMiddleware(app.wsgi_app, prefix='/finans')
 # Logger & DB
 logger = setup_logger("WebAPI", logging.INFO)
 
-# Veritabanı yolu - proje kök dizininde (daha güvenli path yönetimi)
+# Veritabanı - Supabase (PostgreSQL) URL üzerinden çalışır
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-DB_PATH = os.path.join(BASE_DIR, "portfoy.db")
-db = PortfolioDB(DB_PATH)
+try:
+    db = PortfolioDB()
+except Exception as e:
+    logger.error(f"Veritabanı başlatılamadı: {e}")
+    db = None
 
 # Chat geçmişi (session bazlı, basit in-memory)
 chat_sessions = {}
