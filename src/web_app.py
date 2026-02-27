@@ -80,7 +80,7 @@ except Exception as e:
 chat_sessions = {}
 
 # Fiyat alarmları (in-memory, JSON dosyasıyla persist)
-ALERTS_FILE = os.path.join(BASE_DIR, "alarmlar.json")
+ALERTS_FILE = os.path.join("/tmp", "alarmlar.json") if os.environ.get("VERCEL") or os.environ.get("VERCEL_REGION") else os.path.join(BASE_DIR, "alarmlar.json")
 price_alerts = []
 
 def load_alerts():

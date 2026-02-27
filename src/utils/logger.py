@@ -8,9 +8,13 @@ from datetime import datetime
 from pathlib import Path
 from logging.handlers import RotatingFileHandler
 
+import os
 # Log dosyası konumu
-LOG_DIR = Path(__file__).parent.parent.parent / "logs"
-LOG_DIR.mkdir(exist_ok=True)
+if os.environ.get("VERCEL") or os.environ.get("VERCEL_REGION"):
+    LOG_DIR = Path("/tmp")
+else:
+    LOG_DIR = Path(__file__).parent.parent.parent / "logs"
+    LOG_DIR.mkdir(exist_ok=True)
 
 # Renkli terminal çıktısı için ANSI kodları
 class Colors:
