@@ -26,6 +26,42 @@
     <div class="search-result" id="searchResult"></div>
 </section>
 
+<!-- Döviz Çevirici -->
+<section class="section">
+    <div class="section-header">
+        <h2 class="section-title">💱 Döviz Çevirici</h2>
+    </div>
+    <div class="converter-card">
+        <div class="converter-row">
+            <div class="converter-input-group">
+                <label for="converterAmount">Miktar</label>
+                <input type="number" id="converterAmount" class="converter-input" placeholder="100" value="1" step="any"
+                    min="0">
+            </div>
+            <div class="converter-input-group">
+                <label for="converterFrom">Birim</label>
+                <select id="converterFrom" class="converter-select">
+                    <option value="USD">🇺🇸 USD (Dolar)</option>
+                    <option value="EUR">🇪🇺 EUR (Euro)</option>
+                    <option value="ALTIN">🥇 Gram Altın</option>
+                    <option value="GBP">🇬🇧 GBP (Sterlin)</option>
+                </select>
+            </div>
+            <div class="converter-arrow">→</div>
+            <div class="converter-input-group">
+                <label>Sonuç</label>
+                <div class="converter-result" id="converterResult">
+                    <span class="converter-result-value">-</span>
+                    <span class="converter-result-currency">TRY (₺)</span>
+                </div>
+            </div>
+        </div>
+        <div class="converter-info" id="converterInfo">
+            Miktar girip birim seçin, otomatik hesaplanır
+        </div>
+    </div>
+</section>
+
 <!-- Currency Section -->
 <section class="section">
     <div class="section-header">
