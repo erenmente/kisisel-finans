@@ -10,5 +10,10 @@
             "src": "/(.*)",
             "dest": "src/web_app.py"
         }
-    ]
+    ],
+    "build": {
+        "env": {
+            "ENABLE_VC_BUILD": "1"
+        }
+    }
 }
