@@ -434,6 +434,106 @@ def api_history():
 
 
 # ============================================================
+# CSV DIŞA AKTARMA
+# ============================================================
+#
+# Bu endpoint portföy verilerini CSV formatında döndürür.
+# CSV (Comma-Separated Values) = virgülle ayrılmış değerler dosyası.
+# Excel, Google Sheets gibi programlarla doğrudan açılabilir.
+#
+# Akış:
+# 1. Veritabanından portföy ve işlem geçmişi verilerini çek
+# 2. Python'un 'csv' modülü ile bellekte CSV dosyası oluştur
+# 3. Response olarak dosya gönder (tarayıcı otomatik indirir)
+
+@app.route('/api/export/csv')
+def api_export_csv():
+    """Portföy verilerini CSV olarak dışa aktar"""
+    import csv       # CSV dosyası oluşturmak için Python standart modülü
+    import io        # StringIO: bellekte dosya gibi davranan nesne
+
+    try:
+        # 1) StringIO: Gerçek dosya yazmak yerine bellekte string oluşturur
+        #    Bu sayede diske yazmadan doğrudan tarayıcıya gönderebiliriz
+        output = io.StringIO()
+
+        # 2) BOM (Byte Order Mark): Excel'in Türkçe karakterleri doğru
+        #    göstermesi için dosyanın başına özel bir işaret koyuyoruz
+        #    Bu olmadan Excel'de "ş, ç, ö, ü" karakterleri bozuk görünür
+        output.write('\ufeff')  # UTF-8 BOM
+
+        # 3) CSV writer oluştur: her satırı otomatik virgülle ayırır
+        writer = csv.writer(output)
+
+        # === BÖLÜM 1: PORTFÖY VERİLERİ ===
+
+        # 4) Başlık satırı yaz
+        writer.writerow(['=== PORTFÖY ==='])
+        writer.writerow(['Sembol', 'Adet', 'Ortalama Maliyet (TL)', 'Toplam Maliyet (TL)', 'İlk Alış Tarihi'])
+
+        # 5) Veritabanından portföy verilerini çek
+        portfolio = db.getir()
+
+        if portfolio:
+            for item in portfolio:
+                # Her yatırım için bir satır yaz
+                writer.writerow([
+                    item.get('sembol', ''),
+                    item.get('miktar', ''),
+                    item.get('ort_maliyet', ''),
+                    item.get('toplam_maliyet', ''),
+                    item.get('tarih', '')
+                ])
+        else:
+            writer.writerow(['Portföyde yatırım bulunamadı'])
+
+        # 6) Bölümler arası boş satır bırak
+        writer.writerow([])
+        writer.writerow([])
+
+        # === BÖLÜM 2: İŞLEM GEÇMİŞİ ===
+
+        writer.writerow(['=== İŞLEM GEÇMİŞİ ==='])
+        writer.writerow(['Tarih', 'İşlem', 'Sembol', 'Miktar', 'Fiyat (TL)', 'Kar/Zarar (TL)'])
+
+        # 7) İşlem geçmişini çek (en son 500 işlem)
+        history = db.islem_gecmisi(limit=500)
+
+        if history:
+            for item in history:
+                writer.writerow([
+                    item.get('tarih', ''),
+                    item.get('islem', ''),
+                    item.get('sembol', ''),
+                    item.get('miktar', ''),
+                    item.get('fiyat', ''),
+                    item.get('kar_zarar', '')
+                ])
+
+        # 8) Dosya adını tarihe göre oluştur
+        #    Örnek: "portfoy_2026-02-28.csv"
+        filename = f"portfoy_{datetime.now().strftime('%Y-%m-%d')}.csv"
+
+        # 9) Response oluştur:
+        #    - Content-Type: text/csv → tarayıcıya "bu bir CSV dosyası" der
+        #    - Content-Disposition: attachment → "bunu indir, gösterme" der
+        #    - filename: indirilen dosyanın adını ayarlar
+        from flask import Response
+        response = Response(
+            output.getvalue(),
+            mimetype='text/csv',
+            headers={
+                'Content-Disposition': f'attachment; filename={filename}',
+                'Content-Type': 'text/csv; charset=utf-8'
+            }
+        )
+        return response
+
+    except Exception as e:
+        logger.error(f"CSV export hatası: {e}")
+        return jsonify({"success": False, "error": str(e)})
+
+# ============================================================
 # AI CHATBOT API
 # ============================================================
 
