@@ -57,12 +57,23 @@
             </div>
         </div>
         <div class="chart-card">
-            <h3 class="chart-title">Kar / Zarar Durumu</h3>
-            <div class="performance-summary" id="performanceSummary">
-                <div class="perf-loading">
-                    <div class="loading-spinner"></div>
-                    <span>Fiyatlar yükleniyor...</span>
-                </div>
+            <h3 class="chart-title">Kar / Zarar Grafiği</h3>
+            <div class="chart-container">
+                <canvas id="plChart"></canvas>
+            </div>
+            <div class="chart-empty hidden" id="plChartEmpty">
+                <div class="empty-state-icon">📈</div>
+                <div class="empty-state-text">Performans verisi yok</div>
+            </div>
+        </div>
+    </div>
+    <!-- Kar/Zarar Detay Listesi -->
+    <div class="chart-card" style="margin-top: var(--space-md);">
+        <h3 class="chart-title">Kar / Zarar Detayları</h3>
+        <div class="performance-summary" id="performanceSummary">
+            <div class="perf-loading">
+                <div class="loading-spinner"></div>
+                <span>Fiyatlar yükleniyor...</span>
             </div>
         </div>
     </div>

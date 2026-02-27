@@ -4,6 +4,7 @@
  */
 
 let portfolioChart = null;
+let plChart = null;         // Kar/Zarar çubuk grafiği referansı
 let autoRefreshInterval = null;
 
 // ============================================================
@@ -218,6 +219,139 @@ async function loadPerformance() {
 }
 
 // ============================================================
+// KAR/ZARAR BAR CHART (Çubuk Grafiği)
+// ============================================================
+//
+// Bu fonksiyon /api/portfolio/performance endpoints'inden veri çeker.
+// Her yatırımın kar veya zarar miktarını yatay çubuk (bar) olarak çizer.
+// - Yeşil çubuklar = Kâr eden yatırımlar
+// - Kırmızı çubuklar = Zarar eden yatırımlar
+// Kullanıcı, hangi yatırımının ne kadar kazandırdığını/kaybettirdiğini
+// bir bakışta karşılaştırabilir.
+
+async function loadPLChart() {
+    const chartCanvas = document.getElementById('plChart');
+    const chartEmpty = document.getElementById('plChartEmpty');
+    if (!chartCanvas) return;
+
+    try {
+        // 1) Backend'den performans verisini çek
+        //    Bu endpoint her yatırımın güncel fiyatını çekip
+        //    alış maliyetiyle karşılaştırarak kar/zarar hesaplar
+        const data = await API.get('/api/portfolio/performance');
+
+        // 2) Veri yoksa veya hata varsa boş mesajı göster
+        if (!data.success || !data.data?.length) {
+            chartCanvas.classList.add('hidden');
+            if (chartEmpty) chartEmpty.classList.remove('hidden');
+            return;
+        }
+
+        // 3) Sadece fiyatı alınabilen (kar/zarar hesaplanabilen) yatırımları filtrele
+        const validItems = data.data.filter(item => item.kar_zarar !== null);
+        if (validItems.length === 0) {
+            chartCanvas.classList.add('hidden');
+            if (chartEmpty) chartEmpty.classList.remove('hidden');
+            return;
+        }
+
+        chartCanvas.classList.remove('hidden');
+        if (chartEmpty) chartEmpty.classList.add('hidden');
+
+        // 4) Grafik için etiketleri (sembol adları) ve değerleri (kar/zarar TL) hazırla
+        const labels = validItems.map(item => item.sembol);
+        const values = validItems.map(item => item.kar_zarar);
+
+        // 5) Her çubuğun rengini kar mı zarar mı olduğuna göre belirle
+        //    Kâr = yeşil tonları, Zarar = kırmızı tonları
+        const bgColors = values.map(v =>
+            v >= 0 ? 'rgba(16, 185, 129, 0.7)' : 'rgba(239, 68, 68, 0.7)'
+        );
+        const borderColors = values.map(v =>
+            v >= 0 ? 'rgba(16, 185, 129, 1)' : 'rgba(239, 68, 68, 1)'
+        );
+
+        // 6) Eğer daha önce bir grafik varsa yok et (bellek sızıntısı önleme)
+        if (plChart) {
+            plChart.destroy();
+        }
+
+        // 7) Chart.js ile yatay çubuk (bar) grafiği oluştur
+        const ctx = chartCanvas.getContext('2d');
+        plChart = new Chart(ctx, {
+            type: 'bar',                    // Çubuk grafik tipi
+            data: {
+                labels: labels,             // X eksenindeki sembol isimleri
+                datasets: [{
+                    label: 'Kar/Zarar (₺)',
+                    data: values,           // Her çubuğun yüksekliği (TL cinsinden)
+                    backgroundColor: bgColors,
+                    borderColor: borderColors,
+                    borderWidth: 1,
+                    borderRadius: 6,        // Çubukların köşelerini yuvarlat (modern görünüm)
+                    borderSkipped: false     // Alt köşeleri de yuvarlat
+                }]
+            },
+            options: {
+                responsive: true,           // Pencere boyutuna göre uyum sağla
+                maintainAspectRatio: false,  // Container boyutuna uysun, sabit oran tutmasın
+                indexAxis: 'x',             // Dikey çubuklar (x ekseni = semboller)
+                plugins: {
+                    legend: {
+                        display: false       // Açıklama kutusunu gizle (gereksiz, zaten başlık var)
+                    },
+                    tooltip: {
+                        // Mouse ile çubuğun üstüne gelince gösterilecek bilgi kutusu
+                        backgroundColor: 'rgba(18, 18, 26, 0.95)',
+                        titleColor: '#fff',
+                        bodyColor: '#a0a0b0',
+                        borderColor: 'rgba(99, 102, 241, 0.3)',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        padding: 12,
+                        callbacks: {
+                            label: function (context) {
+                                const val = context.parsed.y;
+                                const sign = val >= 0 ? '+' : '';
+                                return ` ${sign}${UI.formatNumber(val)} ₺`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        // X ekseni (sembol isimleri) ayarları
+                        ticks: {
+                            color: '#a0a0b0',
+                            font: { family: 'Inter', size: 11 }
+                        },
+                        grid: { display: false }  // Dikey ızgara çizgilerini gizle
+                    },
+                    y: {
+                        // Y ekseni (TL değerleri) ayarları
+                        ticks: {
+                            color: '#a0a0b0',
+                            font: { family: 'Inter', size: 11 },
+                            callback: function (value) {
+                                return UI.formatNumber(value) + ' ₺';
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'  // Hafif yatay çizgiler
+                        }
+                    }
+                },
+                animation: {
+                    duration: 800           // Grafik 800ms'de animasyonla çizilsin
+                }
+            }
+        });
+    } catch (e) {
+        console.error('PL Chart error:', e);
+    }
+}
+
+// ============================================================
 // QUICK MARKET (Canlı Fiyatlar)
 // ============================================================
 
@@ -428,6 +562,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load all sections
     loadDashboardStats();
     loadPortfolioChart();
+    loadPLChart();          // Yeni: Kar/Zarar çubuk grafiğini yükle
     loadPerformance();
     loadQuickMarket();
     loadAlerts();
@@ -454,6 +589,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('refreshPerformance')?.addEventListener('click', () => {
         loadPerformance();
         loadPortfolioChart();
+        loadPLChart();      // Yeni: Güncelle butonuna basınca bar chart da yenilensin
         UI.showToast('📊 Performans güncelleniyor...');
     });
 
