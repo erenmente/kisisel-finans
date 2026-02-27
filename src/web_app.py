@@ -499,6 +499,9 @@ def api_export_csv():
     import csv       # CSV dosyası oluşturmak için Python standart modülü
     import io        # StringIO: bellekte dosya gibi davranan nesne
 
+    if not db:
+        return jsonify({"success": False, "error": "Veritabanı bağlantısı yok"})
+
     try:
         # 1) StringIO: Gerçek dosya yazmak yerine bellekte string oluşturur
         #    Bu sayede diske yazmadan doğrudan tarayıcıya gönderebiliriz
