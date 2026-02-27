@@ -281,25 +281,72 @@ def get_gold_price() -> dict:
     
     return {"success": False, "error": "Altın fiyatı alınamadı"}
 
+# ============================================================
+# FİYAT ÖNBELLEĞİ (CACHE)
+# ============================================================
+#
+# Amaç: Aynı sembol kısa sürede tekrar sorulduğunda dış API'ye
+# gitmek yerine bellekteki sonucu döndürmek.
+#
+# Yapı:
+#   price_cache = {
+#       "USD": {"data": {...}, "timestamp": 1709100000},
+#       "EUR": {"data": {...}, "timestamp": 1709100005},
+#   }
+#
+# Her sembol için son çekilen veri ve zamanı tutulur.
+# TTL (Time To Live) = 60 saniye. 60sn geçtiyse yeniden çekilir.
+
+price_cache = {}          # Önbellek sözlüğü
+CACHE_TTL = 60            # Önbellek süresi (saniye)
+
 
 def get_price_for_symbol(symbol: str) -> dict:
-    """Genel fiyat çekme fonksiyonu"""
+    """
+    Genel fiyat çekme fonksiyonu.
+    Tüm fiyat sorguları bu fonksiyondan geçer.
+    Cache mantığı:
+      1. Önbellekte var mı ve süresi dolmamış mı? → Var: hemen döndür
+      2. Yok veya süre dolmuş → Dış API'den çek, önbelleğe kaydet, döndür
+    """
     symbol = symbol.upper().strip()
-    
+
+    # --- CACHE KONTROLÜ ---
+    # time.time() = şu anki zamanı saniye cinsinden verir (Unix timestamp)
+    # Eğer sembol önbellekte varsa VE son çekilme zamanı 60sn'den yakınsa → döndür
+    cached = price_cache.get(symbol)
+    if cached and (time.time() - cached["timestamp"]) < CACHE_TTL:
+        logger.debug(f"Cache HIT: {symbol} ({CACHE_TTL}sn önbellek)")
+        return cached["data"]
+
+    # --- CACHE MISS: Dış API'den fiyatı çek ---
+    logger.debug(f"Cache MISS: {symbol} → API'den çekiliyor")
+
     if symbol in ["ALTIN", "GOLD", "XAU"]:
-        return get_gold_price()
-    
-    if symbol in ["USD", "EUR", "GBP", "DOLAR", "EURO"]:
+        result = get_gold_price()
+
+    elif symbol in ["USD", "EUR", "GBP", "DOLAR", "EURO"]:
         if symbol == "DOLAR": symbol = "USD"
         elif symbol == "EURO": symbol = "EUR"
-        return get_currency_rate(symbol)
-    
-    if len(symbol) == 3:
+        result = get_currency_rate(symbol)
+
+    elif len(symbol) == 3:
         result = get_tefas_price(symbol)
-        if result.get("success"):
-            return result
-    
-    return get_stock_price(symbol)
+        if not result.get("success"):
+            result = get_stock_price(symbol)
+    else:
+        result = get_stock_price(symbol)
+
+    # --- BAŞARILI SONUCU ÖNBELLEĞE KAYDET ---
+    # Sadece başarılı sonuçları cache'liyoruz.
+    # Hatalı sonuçları cache'lersek kullanıcı 60sn boyunca hata görür.
+    if result.get("success"):
+        price_cache[symbol] = {
+            "data": result,
+            "timestamp": time.time()    # Şu anki zamanı kaydet
+        }
+
+    return result
 
 
 # ============================================================
