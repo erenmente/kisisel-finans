@@ -1,9 +1,13 @@
-# 🚀 Finans Asistanı v11 - Browser Agent Edition
+# 🚀 Finans Asistanı v12 - Web UI & Bulut Sürümü
 
-Yapay zeka destekli, **gerçek tarayıcı otomasyonu** ile çalışan kişisel finans asistanı.
+Yapay zeka detaylarına sahip, **gerçek tarayıcı otomasyonu** ve yepyeni **çoklu sayfa web arayüzü** ile çalışan kişisel finans asistanının Vercel ve Supabase altyapısına uyumlu en son hali.
+
+🟢 **Canlı Demo (Yayında):** [https://kisisel-finans.vercel.app/](https://kisisel-finans.vercel.app/)
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue?style=flat-square&logo=python)
-![Playwright](https://img.shields.io/badge/Playwright-Enabled-green?style=flat-square)
+![Flask](https://img.shields.io/badge/Flask-Web%20App-black?style=flat-square&logo=flask)
+![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?style=flat-square&logo=supabase)
+![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?style=flat-square&logo=vercel)
 ![Groq](https://img.shields.io/badge/AI-Groq%20LLama%203.3-purple?style=flat-square)
 
 ---
