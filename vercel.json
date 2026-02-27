@@ -11,5 +11,7 @@
             "dest": "src/web_app.py"
         }
     ],
-    "installCommand": "pip install -r requirements.txt"
+    "env": {
+        "UV_PYTHON_PREFERENCE": "only-system"
+    }
 }

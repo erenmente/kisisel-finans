@@ -9,6 +9,7 @@ requests>=2.31.0
 beautifulsoup4>=4.12.0
 
 # Finans Verileri
+multitasking==0.0.11
 yfinance>=0.2.36
 tefas-crawler>=0.3.0
 
