@@ -1,0 +1,50 @@
+# ============================================================
+# Supabase Keep-Alive Workflow
+# ============================================================
+#
+# Amaç: Supabase ücretsiz plan, 7 gün boyunca hiç istek gelmezse
+# veritabanını "pause" (duraklatma) moduna alır.
+# Bu workflow, her 5 günde bir siteye istek atarak bunu önler.
+#
+# Nasıl çalışır?
+# - GitHub, belirtilen cron zamanında bu workflow'u otomatik çalıştırır
+# - Workflow, Vercel'deki canlı siteye bir HTTP GET isteği atar
+# - Bu istek Supabase'e ulaşır ve veritabanını "aktif" tutar
+# - Tamamen ücretsizdir (GitHub Actions ücretsiz planı yeterli)
+
+name: Supabase Keep-Alive
+
+on:
+  # Cron sözdizimi: "dakika saat gün ay haftanın-günü"
+  # "0 9 */5 * *" = her 5 günde bir, sabah 09:00'da (UTC)
+  schedule:
+    - cron: "0 9 */5 * *"
+
+  # Manuel olarak da tetiklenebilsin (Actions sekmesinden "Run workflow" butonu)
+  workflow_dispatch:
+
+jobs:
+  ping:
+    name: Ping Vercel & Keep Supabase Alive
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1) Portföy API'sini ping'le
+      #    Bu endpoint Supabase'e SELECT sorgusu atar → veritabanı aktif kalır
+      - name: Ping Portfolio API
+        run: |
+          echo "🏓 Supabase keep-alive ping gönderiliyor..."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://kisisel-finans.vercel.app/api/portfolio)
+          echo "📡 HTTP Status: $STATUS"
+          if [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 500 ]; then
+            echo "✅ Ping başarılı! Supabase aktif."
+          else
+            echo "⚠️ Ping başarısız, HTTP $STATUS"
+          fi
+
+      # 2) Piyasa API'sini de ping'le (opsiyonel, ekstra güvence)
+      - name: Ping Market API
+        run: |
+          curl -s -o /dev/null -w "Market API: %{http_code}\n" \
+            https://kisisel-finans.vercel.app/api/price/USD
+          echo "✅ Keep-alive tamamlandı."

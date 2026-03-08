@@ -32,10 +32,16 @@ class PortfolioDB:
         if not self.db_url:
             logger.error("❌ DATABASE_URL ortam değişkeni bulunamadı. Lütfen .env dosyasını kontrol edin.")
             raise ValueError("DATABASE_URL gerekli!")
+        
+        # Supabase SSL gerektiriyor — URL'de sslmode yoksa ekle
+        if "sslmode" not in self.db_url:
+            separator = "&" if "?" in self.db_url else "?"
+            self.db_url += f"{separator}sslmode=require"
             
         try:
-            # Thread-safe bağlantı havuzu (min 1, max 10 bağlantı)
-            self.connection_pool = pool.ThreadedConnectionPool(1, 10, dsn=self.db_url)
+            # SimpleConnectionPool: Serverless ortamlar (Vercel) için daha uygun
+            # ThreadedConnectionPool çoklu thread gerektirir, serverless'ta sıkıntı çıkarır
+            self.connection_pool = pool.SimpleConnectionPool(1, 5, dsn=self.db_url)
             logger.info("📂 Supabase (PostgreSQL) bağlantı havuzu başarıyla kuruldu.")
             self._create_tables()
         except Exception as e:

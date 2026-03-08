@@ -1698,6 +1698,10 @@ select option {
     padding: var(--space-lg);
 }
 
+.chart-card--mt {
+    margin-top: var(--space-md);
+}
+
 .chart-title {
     font-size: 0.95rem;
     font-weight: 600;
@@ -2082,6 +2086,7 @@ select option {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
+    -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
     z-index: 199;
 }
@@ -2221,7 +2226,6 @@ select option {
     /* Portfolio Table */
     .portfolio-table-wrapper {
         overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
     }
 
     .portfolio-table {
